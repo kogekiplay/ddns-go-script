@@ -93,7 +93,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/kogekiplayer/ddns-go-script/master/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/kogekiplay/ddns-go-script/master/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -109,7 +109,7 @@ update() {
     else
         version=$2
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/kogekiplayer/ddns-go-script/master/install.sh) $version
+    bash <(curl -Ls https://raw.githubusercontent.com/kogekiplay/ddns-go-script/master/install.sh) $version
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启 ddns-go，请使用 systemctl status ddns-go 查看运行日志${plain}"
         exit
@@ -257,7 +257,7 @@ show_log() {
 }
 
 update_shell() {
-    wget -O /usr/bin/ddns-go -N --no-check-certificate https://raw.githubusercontent.com/kogekiplayer/ddns-go-script/master/ddns-go.sh
+    wget -O /usr/bin/ddns-go -N --no-check-certificate https://raw.githubusercontent.com/kogekiplay/ddns-go-script/master/ddns-go.sh
     if [[ $? != 0 ]]; then
         echo ""
         echo -e "${red}下载脚本失败，请检查本机能否连接 Github${plain}"
@@ -390,7 +390,7 @@ show_usage() {
 show_menu() {
     echo -e "
   ${green}ddns-go 后端管理脚本，${plain}${red}不适用于docker${plain}
---- https://github.com/kogekiplayer/ddns-go-script ---
+--- https://github.com/kogekiplay/ddns-go-script ---
   ${green}0.${plain} 修改配置
 ————————————————
   ${green}1.${plain} 安装 ddns-go

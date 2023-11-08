@@ -177,7 +177,7 @@ install_ddns() {
     systemctl daemon-reload
     /etc/ddns-go/ddns-go -s install -l ":$port" -f 600 -c /etc/ddns-go/config.yaml
     echo -e "${green}ddns-go ${last_version}${plain} 安装完成，你可以通过/etc/ddns-go/config.yaml来设置ddns-go配置"
-    curl -o /usr/bin/ddns-go -Ls https://raw.githubusercontent.com/kogekiplayer/ddns-go-script/master/ddns-go.sh
+    curl -o /usr/bin/ddns-go -Ls https://raw.githubusercontent.com/kogekiplay/ddns-go-script/master/ddns-go.sh
     chmod +x /usr/bin/ddns-go
 
 
