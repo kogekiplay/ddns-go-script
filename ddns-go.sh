@@ -140,6 +140,7 @@ config() {
         2)
             echo -e "ddns-go状态: ${red}未安装${plain}"
     esac
+    restart
 }
 
 uninstall() {
@@ -150,11 +151,7 @@ uninstall() {
         fi
         return 0
     fi
-    systemctl stop ddns-go
-    systemctl disable ddns-go
-    rm /etc/systemd/system/ddns-go.service -f
-    systemctl daemon-reload
-    systemctl reset-failed
+    /etc/ddns-go/ddns-go -s uninstall
     rm /etc/ddns-go/ -rf
 
     echo ""
@@ -343,6 +340,10 @@ show_enable_status() {
     fi
 }
 
+check_ip() {
+    ip=$(curl -s -4 https://api.ip.sb/ip -A Mozilla)
+}
+
 reset() {
     check_status
     if [[ $? -eq 0 || $? -eq 1 ]]; then
@@ -365,6 +366,8 @@ reset() {
         fi
     done
     /etc/ddns-go/ddns-go -s install -l ":$port" -f 600 -c /etc/ddns-go/config.yaml
+    check_ip
+    echo -e "${green}ddns-go ${plain} 访问地址：http://${ip}:${port}"
 }
 
 show_usage() {
@@ -383,7 +386,7 @@ show_usage() {
     echo "ddns-go config        - 编辑 ddns-go 配置文件"
     echo "ddns-go install       - 安装 ddns-go"
     echo "ddns-go uninstall     - 卸载 ddns-go"
-    echo "ddns-go reset         - 修改 ddns-go 监听端口"
+    echo "ddns-go reset         - 修改 ddns-go 监听端口并重启"
     echo "-------------------------------------------"
 }
 
@@ -407,7 +410,7 @@ show_menu() {
   ${green}10.${plain} 取消 ddns-go 开机自启
 ————————————————
   ${green}11.${plain} 升级 ddns-go 维护脚本
-  ${green}12.${plain} 修改 ddns-go 监听端口
+  ${green}12.${plain} 修改 ddns-go 监听端口并重启
  "
  #后续更新可加入上方字符串中
     show_status

@@ -106,6 +106,10 @@ check_status() {
     fi
 }
 
+check_ip() {
+    ip=$(curl -s -4 https://api.ip.sb/ip -A Mozilla)
+}
+
 install_ddns() {
     if [[ -e /etc/ddns-go/ ]]; then
         rm -rf /etc/ddns-go/
@@ -128,7 +132,7 @@ install_ddns() {
         echo -e "下载的文件名：${filename}"
         download_url=$(echo "${json}" | jq -r --arg filename "${filename}" '.[0].assets[] | select(.name == $filename) | .url')
         echo -e $download_url
-        wget -q --header='Accept:application/octet-stream' -N --no-check-certificate -O /usr/local/ddns-go/ddns-go-linux.tar.gz "${download_url}"
+        wget -q --header='Accept:application/octet-stream' -N --no-check-certificate -O /etc/ddns-go/ddns-go-linux.tar.gz "${download_url}"
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 ddns-go 失败，请确保你的服务器能够下载 Github 的文件${plain}"
             exit 1
@@ -140,7 +144,7 @@ install_ddns() {
         filename="ddns-go_${last_version}_linux_${arch}.tar.gz"
         download_url=$(echo "${json}" | jq -r --arg filename "${filename}" --arg tag "${tag_name}" 'select(.tag_name == $tag) | .assets[] | select(.name == $filename) | .url')
         echo -e "开始安装 ddns-go $1"
-        wget -q --header='Accept:application/octet-stream' -N --no-check-certificate -O /usr/local/ddns-go/ddns-go-linux.tar.gz "${download_url}"
+        wget -q --header='Accept:application/octet-stream' -N --no-check-certificate -O /etc/ddns-go/ddns-go-linux.tar.gz "${download_url}"
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 ddns-go $1 失败，请确保此版本存在${plain}"
             exit 1
@@ -167,15 +171,16 @@ install_ddns() {
     fi
 
 
-    tar -xzvf ddns-go-linux.tar.gz
+    tar -xzf ddns-go-linux.tar.gz
+    rm ddns-go-linux.tar.gz -f
     rm -f LICENSE
     rm -f README.md
     chmod +x ddns-go
-    rm config.yaml -f
-    touch config.yaml
     rm /etc/systemd/system/ddns-go.service -f
     systemctl daemon-reload
     /etc/ddns-go/ddns-go -s install -l ":$port" -f 600 -c /etc/ddns-go/config.yaml
+    check_ip
+    echo -e "${green}ddns-go ${plain} 访问地址：http://${ip}:${port}"
     echo -e "${green}ddns-go ${last_version}${plain} 安装完成，你可以通过/etc/ddns-go/config.yaml来设置ddns-go配置"
     curl -o /usr/bin/ddns-go -Ls https://raw.githubusercontent.com/kogekiplay/ddns-go-script/master/ddns-go.sh
     chmod +x /usr/bin/ddns-go
@@ -199,7 +204,7 @@ install_ddns() {
     echo "ddns-go config        - 编辑 ddns-go 配置文件"
     echo "ddns-go install       - 安装 ddns-go"
     echo "ddns-go uninstall     - 卸载 ddns-go"
-    echo "ddns-go reset         - 修改 ddns-go 监听端口"
+    echo "ddns-go reset         - 修改 ddns-go 监听端口并重启"
     echo "-------------------------------------------"
 
 
